@@ -1,6 +1,6 @@
 const express = require('express')
 const server = express()
-// const userRoutes = require('./routes/userRoutes')
+const routes = require('./routes/index')
 const bodyParser = require('body-parser')
 
 //middleware
@@ -12,6 +12,6 @@ server.use(express.static('public'));
 
 //router
 
-// app.use(userRoutes)
+server.use('/api', routes)
 
 module.exports = server
