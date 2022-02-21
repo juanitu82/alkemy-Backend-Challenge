@@ -47,21 +47,24 @@ exports.getCharacters = async (req, res) => {
                 }]
                 })
             }
-            return res.json(query)
+            if(queryId) return res.json(queryId)  
+            else return res.status(404) 
         }
         
             query = await Characters.findAll({
                 attributes: ['nombre', 'imagen']
             })
         
-        res.json(query)
+            query ? res.json(query) : 
+                res.status(404)
     } catch (error) {
-        console.log(error)
+        res.status(404).json({
+            msge: 'Error',
+            error
+        })    
     }
     
 }
-
-
 
 exports.getCharactersById = async (req, res) => {
     
@@ -77,25 +80,28 @@ exports.getCharactersById = async (req, res) => {
                     }]
         
             })
-            res.json(query)    
+            query ? res.json(query) : 
+            res.status(404)
         } catch (error) {
-            console.log(error)
+            res.status(404).json({
+                msge: 'Error. The character doesnt exist',
+                error
+            })
         }
         
     
-    }
-
+}
 exports.createCharacter = async (req, res) => {
 
     try {
         const charCreate = await Characters.create(req.body)
-        console.log(charCreate)
-        console.log(charCreate.dataValues)
-        let prueba = charCreate.toJSON()
-        console.log(prueba.edad)
+       
         charCreate ? res.json('Character created') : res.status(404).send('Error. Couldnt create the character')
     } catch (error) {
-        console.log(error)
+        res.status(404).json({
+            msge: 'Error. The Character wasnt created',
+            error
+        })
     }
 }
 exports.updateCharacter = async (req, res) => {
@@ -106,7 +112,7 @@ exports.updateCharacter = async (req, res) => {
             }
         })
 
-        if(updateQuery[0] != 0) return res.json('The character was successfully deleted from DB') 
+        if(updateQuery[0] != 0) return res.json('The character was successfully updated from DB') 
         else res.status(404).json('The character couldnt been updated')
     
         
