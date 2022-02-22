@@ -2,7 +2,7 @@ const { Characters, Movies } = require('../../db')
 
 
 
-exports.getCharacters = async (req, res) => {
+exports.getCharacters = async (req, res, next) => {
     let query
     
     const {nombre, edad, peso, movie} = req.query
@@ -58,15 +58,12 @@ exports.getCharacters = async (req, res) => {
             query ? res.json(query) : 
                 res.status(404)
     } catch (error) {
-        res.status(404).json({
-            msge: 'Error',
-            error
-        })    
+        next(error)
     }
     
 }
 
-exports.getCharactersById = async (req, res) => {
+exports.getCharactersById = async (req, res, next) => {
     
         try {
             const query = await Characters.findOne({
@@ -83,28 +80,22 @@ exports.getCharactersById = async (req, res) => {
             query ? res.json(query) : 
             res.status(404)
         } catch (error) {
-            res.status(404).json({
-                msge: 'Error. The character doesnt exist',
-                error
-            })
+            next(error)
         }
         
     
 }
-exports.createCharacter = async (req, res) => {
+exports.createCharacter = async (req, res, next) => {
 
     try {
         const charCreate = await Characters.create(req.body)
        
         charCreate ? res.json('Character created') : res.status(404).send('Error. Couldnt create the character')
     } catch (error) {
-        res.status(404).json({
-            msge: 'Error. The Character wasnt created',
-            error
-        })
+        next(error)
     }
 }
-exports.updateCharacter = async (req, res) => {
+exports.updateCharacter = async (req, res, next) => {
     try {
         const updateQuery = await Characters.update( req.body, {
             where: {
@@ -117,10 +108,10 @@ exports.updateCharacter = async (req, res) => {
     
         
     } catch (error) {
-        console.log(error)
+        next(error)
     }
 }
-exports.deleteCharacter = async (req, res) => {
+exports.deleteCharacter = async (req, res, next) => {
     try {
         const destroy = await Characters.destroy({
             where: { id: req.params.id}
@@ -129,7 +120,7 @@ exports.deleteCharacter = async (req, res) => {
         if(destroy != 0) res.json('The character was successfully deleted from DB') 
         else throw new Error('The character couldnt been deleted from DB')
     } catch (error) {
-        res.status(404).send('Somethings wrong!')
+        next(error)
     }
     
 }

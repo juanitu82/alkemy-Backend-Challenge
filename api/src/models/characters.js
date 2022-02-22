@@ -12,11 +12,11 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         peso: {
-            type: DataTypes.FLOAT,
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         historia: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false
         }
     })}

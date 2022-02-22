@@ -9,8 +9,8 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         imagen: { type: DataTypes.STRING },
-        fecha: {
-            type: DataTypes.DATEONLY,
+        fechaCreacion: {
+            type: DataTypes.INTEGER,
             allowNull: false
         },
         calificacion: {

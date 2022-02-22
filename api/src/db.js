@@ -19,8 +19,10 @@ const {Characters, Genres, Movies} = sequelize.models
 // console.log(sequelize.models)
 //relaciones
 Characters.belongsToMany(Movies, {through: 'moviesCharacter'})
-Movies.belongsToMany(Characters, {through: 'Character-Movies'})
-Genres.hasMany(Movies)
+Movies.belongsToMany(Characters, {through: 'moviesCharacter'})
+Genres.belongsToMany(Movies, {through: 'moviesGenres'})
+Movies.belongsToMany(Genres, {through: 'moviesGenres'})
+
 
 
 module.exports = {

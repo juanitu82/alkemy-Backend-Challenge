@@ -1,45 +1,41 @@
-const { Genres } = require('../../db')
+const { Genres, Movies } = require('../../db')
 
-exports.getGenres = async (req, res) => {
+exports.getGenres = async (req, res, next) => {
     try {
         const query = await Genres.findAll()
         query ? res.json(query) :
             res.status(404)
     } catch (error) {
-        res.status(404).json({
-            msge: 'Error',
-            error
-        })
+        next(error)
     }
 }
 
-exports.getGenreById = async (req, res) => {
+exports.getGenreById = async (req, res, next) => {
     try {
-        const queryId = await Genres.findByPk(req.params.id)
+        const queryId = await Genres.findOne({
+            where: {
+                id: req.params.id
+            },
+            include: Movies
+        })
         queryId ? res.json(queryId) : 
             res.status(404).json('error')
     } catch (error) {
-        res.status(404).json({
-            msge: 'Error. The genre doesnt exist',
-            error
-        })
+        next(error)
     }
 }
 
-exports.createGenre = async (req, res) => {
+exports.createGenre = async (req, res, next) => {
     try {
         const createQuery = await Genres.create(req.body)
         createQuery ? res.json('Genre created') : res.status(404).send('Error. Couldnt create the genre')
 
     } catch (error) {
-        res.status(404).json({
-            msge: 'Error. The genre wasnt created',
-            error
-        })
+        next(error)
     }
 }
 
-exports.putGenre = async (req, res) => {
+exports.putGenre = async (req, res, next) => {
    
     try {
         const updateQuery = await Genres.update(req.body, {
@@ -50,14 +46,11 @@ exports.putGenre = async (req, res) => {
         if(updateQuery[0] != 0) return res.json('The genre was successfully updated from DB') 
         else res.status(404).json('The genre couldnt been updated')    
     } catch (error) {
-        res.status(404).json({
-            msge: 'Something happened. We couldnt update the genre',
-            error
-        })
+        next(error)
     }
 }
 
-exports.deleteGenre = async (req, res) => {
+exports.deleteGenre = async (req, res, next) => {
     try {
         const deleteQuery = await Genres.destroy({
             where: {
@@ -68,9 +61,6 @@ exports.deleteGenre = async (req, res) => {
         else throw new Error('The genre couldnt been deleted from DB')
         
     } catch (error) {
-        res.status(404).json({
-            msge: 'An error has occured',
-            error
-        })
+        next(error)
     }
 }
