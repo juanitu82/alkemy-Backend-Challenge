@@ -4,7 +4,7 @@ module.exports = (sequelize) => {
     return sequelize.define('Characters', {
         nombre: {
             type: DataTypes.STRING,
-            allowNull: false
+            // allowNull: false
         },
         imagen: { type: DataTypes.STRING },
         edad: {

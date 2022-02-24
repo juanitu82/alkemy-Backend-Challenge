@@ -21,27 +21,21 @@ conn.sync({force: true})
             if(chars().length != 0) await Characters.bulkCreate(data.characters)
             if(Gens().length != 0)  await Genres.bulkCreate(data.genres)
             if(movies().length != 0) {
-                data.movies.map(async (movie) => { // objeto de la pelicula
-                    try {
-                        let charQuery
-                        query = await Movies.create(movie)
-                        await query.setGenres(movie.generos)
-                        await query.addCharacters(movie.characters)
-                        // movie.characters.map(async (char) => {
-                        //     console.log(char)
-                        //     try {
-                        //         charQuery = await Characters.findByPk(char)
-                        //         await query.createCharacter(charQuery)
-                                
-                        //     } catch (error) {
-                        //         console.log(error)
-                        //     }
-                        // })
-                        
-                    } catch (error) {
-                        console.log(error)
-                    }
-                })
+                let charQuery, char, query
+
+                for (let i = 0; i < data.movies.length; i++) {
+                    query = await Movies.create(data.movies[i])
+                    await query.setGenres(data.movies[i].generos)
+                    char = await Characters.findOne({
+                        where: {
+                            id: data.movies[i].characters[0]
+                        }
+                    })
+                    await query.setCharacters(char)
+
+                    
+                }
+              
             }
     
         } catch (error) {

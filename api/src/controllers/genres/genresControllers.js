@@ -12,11 +12,19 @@ exports.getGenres = async (req, res, next) => {
 
 exports.getGenreById = async (req, res, next) => {
     try {
+        console.log(req.headers)
         const queryId = await Genres.findOne({
             where: {
                 id: req.params.id
             },
-            include: Movies
+            include: [{
+                model: Movies,
+                attributes: ['titulo'],
+                through: {
+                    attributes: []
+                }
+                // exclude: ['moviesGenres']
+            }]
         })
         queryId ? res.json(queryId) : 
             res.status(404).json('error')
