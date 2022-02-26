@@ -13,6 +13,7 @@ module.exports  = (sequelize) => {
         email: {
             type: DataTypes.STRING,
             allowNull: false,
+            unique: true,
             validate: {
                 isEmail: true
             }
@@ -26,7 +27,8 @@ module.exports  = (sequelize) => {
             beforeCreate: async function (user){
                 const hashedPass = await bcrypt.hash(user.password, 8)
                 user.password = hashedPass
-                return user
+                user.nombre = user.nombre.trim()
+                user.email = user.email.trim()
             }
         },
     })

@@ -16,7 +16,7 @@ exports.getUsers = async (req, res, next) => {
 
 exports.getUserById = async (req, res, next) => {
     try {
-        const userQuery = await Users.findByPk(req.params.id)
+        const userQuery = await Users.findByPk(req.user.id)
         res.json(userQuery)
     } catch (error) {
         next(error)
@@ -25,14 +25,17 @@ exports.getUserById = async (req, res, next) => {
 
 exports.signIn = async (req, res, next) => {
     try {
+        const {nombre, email, password} = req.body
+        if(!nombre || !email || !password) throw new Error('There is info missing for creating a user')
+
         const userCreation = await Users.create(req.body)
        
-        userCreation ? mail(req.body.email) : console.log('El mail no se envio')
+        userCreation ? mail(req.body.email) : console.log('An error has occured while atempting to send the email')
         
         if(userCreation){
             const token = await tokenize(userCreation)
             res.status(201).json({
-                msge: 'El usuario se creo correctamente',
+                msge: 'The user has been successfully created',
                 user: {
                     id: userCreation.id,
                     nombre: userCreation.nombre,
@@ -53,18 +56,8 @@ exports.logIn = async (req, res, next) => {
         const queryUser = await validateMail(email, password)
         if(queryUser) {
             const token = await tokenize(queryUser)
-            token ? res.json({user: queryUser, token}) : res.status(400).send('Auth not granted')
-        } else res.sendStatus(400)
-    } catch (error) {
-        next(error)
-    }
-}
-
-exports.logOut = async (req, res, next) => {
-    try {
-        console.log(req.header('Authorization'))
-        req.header('Authorization') = undefined
-        res.status(200).send('Logout')
+            token ? res.json({user: queryUser, token}) : res.status(403).send('Auth not granted')
+        } else res.sendStatus(403)
     } catch (error) {
         next(error)
     }
@@ -74,7 +67,7 @@ exports.updateUser = async (req, res, next) => {
     try {
         const updateUser = await Users.update(req.body, {
             where: {
-                id: req.params.id
+                id: req.user.id
             }
         })
         if(updateUser[0] != 0) return res.json('The user was successfully updated from DB') 
@@ -88,10 +81,10 @@ exports.deleteUser = async (req, res, next) => {
     try {
         await Users.destroy({
             where: {
-                id: req.params.id
+                id: req.user.id
             }
         })
-        res.json('El usuario fue removido de la BD')
+        res.json('The user has been successfully removed BD')
     } catch (error) {
         next(error)
     }

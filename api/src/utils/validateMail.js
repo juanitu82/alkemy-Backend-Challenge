@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt')
 
 
 const validateMail = async (email, pass) => {
+
+    if(!email || !pass) throw new Error('Email or password is missing')
+    
     const userQuery = await Users.findOne({
         where: { email }
     })

@@ -3,7 +3,7 @@ const { Characters, Movies, Genres } = require('../../db')
 
 exports.getMovies = async (req, res, next) => {
     try {
-        const {titulo, genero, ordenacion = 'ASC' } = req.query
+        const {titulo, genero, orden = 'ASC' } = req.query
         let query
         if(titulo || genero){
           
@@ -14,7 +14,7 @@ exports.getMovies = async (req, res, next) => {
                             [Op.iLike]: `%${titulo}%`
                         }
                     },
-                    order: [['fechaCreacion', ordenacion]]
+                    order: [['fechaCreacion', orden]]
                 })
             } else {
                 query = await Movies.findAll({
@@ -24,7 +24,7 @@ exports.getMovies = async (req, res, next) => {
                             nombre: genero 
                         },
                     }],
-                    order: [['fechaCreacion', ordenacion]]
+                    order: [['fechaCreacion', orden]]
                 })
             }
 
@@ -33,7 +33,7 @@ exports.getMovies = async (req, res, next) => {
         } else {
             query = await Movies.findAll({
                 attributes: ['titulo', 'imagen', 'fechaCreacion'],
-                order: [['fechaCreacion', ordenacion]]
+                order: [['fechaCreacion', orden]]
             })
             if(query) return res.json(query)  
             else return res.status(404) 
@@ -53,10 +53,15 @@ exports.getMovieById = async (req, res, next) => {
             include: [
                 {
                     model: Characters, 
-                    attributes: ['nombre']
+                    attributes: ['nombre'],
+                    through: {
+                        // model: Movies,
+                        attributes: []
+                    }
                 },
                 {
                     model: Genres, 
+                    attributes: ['nombre'],
                     through: {
                         attributes: []
                       }
@@ -72,7 +77,6 @@ exports.getMovieById = async (req, res, next) => {
 
 exports.createMovie = async (req, res, next) => {
     try {
-        let query
         const { generos, characters} = req.body
 
         const createMovie = await Movies.create(req.body)
@@ -80,7 +84,7 @@ exports.createMovie = async (req, res, next) => {
         await createMovie.setGenres(generos)
         await createMovie.setCharacters(characters)
 
-        createMovie ? res.json('Character created') : res.status(404).send('Error. Couldnt create the character')
+        createMovie ? res.status(201).json('Character created') : res.status(404).send('Error. Couldnt create the character')
 
     } catch (error) {
         next(error)

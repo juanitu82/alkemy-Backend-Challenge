@@ -4,12 +4,6 @@ const validator = require('validator');
 
 module.exports = (sequelize) => {
     return sequelize.define('Movies', {
-        // id: {
-        //     type: DataTypes.UUID,
-        //     primaryKey: true,
-        //     unique: true,
-        //     defaultValue: UUIDV4
-        // },
         titulo: {
             type: DataTypes.STRING,
             allowNull: false
@@ -26,5 +20,11 @@ module.exports = (sequelize) => {
                 min: 1
             },
             allowNull: false
+        },
+    }, {
+        hooks: {
+            beforeCreate: async function (movie){
+                movie.titulo = movie.titulo.trim()
+            }
         },
     })}

@@ -12,7 +12,6 @@ exports.getGenres = async (req, res, next) => {
 
 exports.getGenreById = async (req, res, next) => {
     try {
-        console.log(req.headers)
         const queryId = await Genres.findOne({
             where: {
                 id: req.params.id
@@ -23,7 +22,6 @@ exports.getGenreById = async (req, res, next) => {
                 through: {
                     attributes: []
                 }
-                // exclude: ['moviesGenres']
             }]
         })
         queryId ? res.json(queryId) : 
@@ -34,9 +32,11 @@ exports.getGenreById = async (req, res, next) => {
 }
 
 exports.createGenre = async (req, res, next) => {
+    
+    if(!req.body.nombre) throw new Error('You need a name for your new genre')
     try {
         const createQuery = await Genres.create(req.body)
-        createQuery ? res.json('Genre created') : res.status(404).send('Error. Couldnt create the genre')
+        createQuery ? res.status(201).json('Genre created') : res.status(404).send('Error. Couldnt create the genre')
 
     } catch (error) {
         next(error)

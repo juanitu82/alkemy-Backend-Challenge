@@ -11,20 +11,22 @@ const sequelize = new Sequelize(`postgres://${process.env.DB_USER}:${process.env
 })
 
 //Ejecucion de modelos
+
 charactersModel(sequelize)
 moviesModel(sequelize)
 genresModel(sequelize)
 usersModel(sequelize)
 
 //Destructuring de modelos
+
 const {Characters, Genres, Movies, Users} = sequelize.models
-// console.log(sequelize.models)
+
 //relaciones
+
 Characters.belongsToMany(Movies, {through: 'moviesCharacter'})
 Movies.belongsToMany(Characters, {through: 'moviesCharacter'})
 Genres.belongsToMany(Movies, {through: 'moviesGenres'})
 Movies.belongsToMany(Genres, {through: 'moviesGenres'})
-
 
 
 module.exports = {

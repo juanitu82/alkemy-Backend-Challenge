@@ -2,7 +2,6 @@ const server = require('express').Router()
 const { query } = require('express')
 const controllers = require('../controllers/characters/charsControllers')
 
-// console.log(nada)
 server.get('/', controllers.getCharacters)
 
 server.get('/:id', controllers.getCharactersById)

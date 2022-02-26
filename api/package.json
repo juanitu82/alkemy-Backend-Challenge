@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd -f ./config/dev.env nodemon index",
-    "seed": "env-cmd -f ./config/dev.env node ./src/utils/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "seed": "env-cmd -f ./config/dev.env node ./src/utils/seed.js"
   },
   "keywords": [],
   "author": "",

@@ -3,13 +3,14 @@ const charsRoutes = require('./charactersRoute')
 const genresRoutes = require('./genresRoute')
 const moviesRoutes = require('./moviesRoute')
 const usersRoutes = require('./usersRoutes')
+const auth = require('../middlewares/auth')
 
-server.use('/characters', charsRoutes)
+server.use('/characters', auth, charsRoutes)
 
-server.use('/genres', genresRoutes)
+server.use('/genres', auth, genresRoutes)
 
-server.use('/movies', moviesRoutes)
+server.use('/movies', auth, moviesRoutes)
 
-server.use('/users', usersRoutes)
+server.use('/auth', usersRoutes)
 
 module.exports = server

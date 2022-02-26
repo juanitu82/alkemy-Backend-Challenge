@@ -4,16 +4,14 @@ const auth = require('../middlewares/auth')
 
 server.get('/', auth, users.getUsers)
 
-server.get('/:id', auth, users.getUserById)
+server.get('/me', auth, users.getUserById)
 
 server.post('/login', users.logIn)
 
-server.post('/logout', users.logOut)
+server.post('/register', users.signIn)
 
-server.post('/signin', users.signIn)
+server.put('/me/update', auth, users.updateUser)
 
-server.put('/:id/update', auth, users.updateUser)
-
-server.delete('/:id/delete', auth, users.deleteUser)
+server.delete('/me/delete', auth, users.deleteUser)
 
 module.exports = server

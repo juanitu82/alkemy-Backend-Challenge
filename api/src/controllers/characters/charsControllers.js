@@ -1,6 +1,5 @@
 const { Characters, Movies } = require('../../db')
-
-
+const { Op } = require('sequelize')
 
 exports.getCharacters = async (req, res, next) => {
     let query
@@ -12,7 +11,9 @@ exports.getCharacters = async (req, res, next) => {
             if(nombre){
                 query = await Characters.findAll({
                     where: {
-                        nombre
+                        nombre: {
+                            [Op.iLike]: `%${nombre}%`
+                        }
                     },
                     attributes: ['nombre', 'imagen']
                 })
@@ -20,7 +21,7 @@ exports.getCharacters = async (req, res, next) => {
             else if(edad){
                 query = await Characters.findAll({
                     where: {
-                        edad
+                        edad: parseInt(edad)
                     },
                     attributes: ['nombre', 'imagen']
                 })
@@ -38,16 +39,20 @@ exports.getCharacters = async (req, res, next) => {
                 query = await Characters.findAll({
                     include: [{
                         model: Movies,
-                        through: {
-                            model: Movies,
-                            attributes:{
-                                exclude: ['imagen', 'fecha cracion', 'calificacion']
+                        where: {
+                            titulo: {
+                                [Op.iLike]: `%${movie}%`
                             }
+                        },
+                        attributes: ['titulo'],
+                        through: {
+                            // model: Movies,
+                            attributes: []
                         }
                 }]
                 })
             }
-            if(queryId) return res.json(queryId)  
+            if(query) return res.json(query)  
             else return res.status(404) 
         }
         
@@ -73,7 +78,10 @@ exports.getCharactersById = async (req, res, next) => {
                 include: [
                     {
                         model: Movies, 
-                        attributes: ['titulo']
+                        attributes: ['titulo'],
+                        through: {
+                            attributes: []
+                          }
                     }]
         
             })
@@ -86,11 +94,12 @@ exports.getCharactersById = async (req, res, next) => {
     
 }
 exports.createCharacter = async (req, res, next) => {
-
+    const { nombre, edad, peso, historia } = req.body
+    if(!nombre || !edad || !peso || !historia) throw new Error('There data missing')
     try {
         const charCreate = await Characters.create(req.body)
        
-        charCreate ? res.json('Character created') : res.status(404).send('Error. Couldnt create the character')
+        charCreate ? res.status(201).json('Character created') : res.status(404).send('Error. Couldnt create the character')
     } catch (error) {
         next(error)
     }
@@ -105,8 +114,6 @@ exports.updateCharacter = async (req, res, next) => {
 
         if(updateQuery[0] != 0) return res.json('The character was successfully updated from DB') 
         else res.status(404).json('The character couldnt been updated')
-    
-        
     } catch (error) {
         next(error)
     }
